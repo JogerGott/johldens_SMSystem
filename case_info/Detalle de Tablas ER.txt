@@ -1,0 +1,88 @@
+Detalle de Tablas ER
+
+BOX				
+key	atribute	data_type	size	Null
+PK	id_box (PK)	integer		NO
+	color	ENUM('negra', 'azul', ...)	15 characteres	NO
+	number	integer		NO
+	status	ENUM('LIBRE', 'OCUPADA', 'PERDIDA', 'INACTIVA')	15 characteres 	NO
+
+
+DOCTOR				
+key	atribute	data_type	size	Null
+PK	id_doctor 	integer	15 characteres 	NO
+	name	string 	50 characteres	NO
+	last name	string 	50 characteres	NO
+	email	string 	50 characteres	YES
+	telephone	string 	15 characteres 	YES
+	adress	string 	200 characteres	YES
+	status	boolean		NO
+	id_clinic	integer		YES
+
+
+PATIENT				
+key	atribute	data_type	size	Null
+PK	id_patient 	integer	15 characteres 	NO
+	name	string	50 charactertes	NO
+	last_name	string	50 charactertes	YES
+
+
+JOB				
+key	atribute	data_type	size	Null
+PK	id_job	integer		NO
+	type	ENUM(NUEVO, REPETICION, GARANTIA)		NO
+	picture	pic		YES
+	description	string	300 characteres	YES
+	entry_date	date		NO
+	expected_exit_date	date		NO
+	exit_date	date		YES
+	status	ENUM (REGISTRADO, EN_PROCESO, EN_REVISION, APROBADO, TERMINADO, FACTURADO, DESPACHADO)		NO
+FK	id_doctor	integer		NO
+FK	id_patient 	integer		NO
+FK	id_product	integer		NO
+FK	id_box	integer		NO
+FK	id_clinic	integer		YES
+
+
+PRODUCT / SERVICE				
+key	atribute	data_type	size	Null
+PK	id_product	integer		NO
+	name	string	50 characteres	NO
+	price	integer		NO
+	production_time	integer		NO
+	status	boolean		NO
+
+
+CLINIC				
+key	atribute	data_type	size	Null
+PK	id_clinic	integer		NO
+	name	string	50characteres	NO
+	adress	string	200 characteres	NO
+	telephone	string	15 characteres 	NO
+	active	Boolean		NO
+
+
+
+INVOICE				
+key	atribute	data_type	size	Null
+PK	id_invoice	integer		NO
+	invoice_date	date		NO
+	detail			NO
+	amount	calculated		NO
+	lending_balance	integer		NO
+	pay_state	ENUM((PAGADO / PARCIAL / PENDIENTE)	15 characteres 	NO
+FK	id_job	integer		NO
+
+
+
+PAYMENT				
+key	atribute	data_type	size	Null
+PK	id_payment	integer		NO
+	pay_date	string	50 characteres	NO
+	payment_amount	integer		NO
+	paymentType	ENUM (EFECTIVO / TRANSFERENCIA / CHEQUE / OTRO)		NO
+	status	boolean		NO
+FK	id_invoice			NO
+
+
+
