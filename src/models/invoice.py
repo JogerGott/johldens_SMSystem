@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum as SqlaEnum, func
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum as SqlaEnum, func, DECIMAL
 import datetime
 from sqlalchemy.orm import relationship
 from src.models.base import Base
@@ -20,8 +20,8 @@ class Invoice(Base):
     invoice_date = Column(Date, nullable=False, default=datetime.date.today)
     detail = Column(String(300), nullable=True)
     
-    amount = Column(Integer, nullable=False) 
-    lending_balance = Column(Integer, nullable=False) 
+    amount = Column(DECIMAL(10, 2), nullable=False) 
+    lending_balance = Column(DECIMAL(10, 2), nullable=False) 
     
     pay_state = Column(SqlaEnum(PayState), nullable=False, default=PayState.PENDIENTE)
 

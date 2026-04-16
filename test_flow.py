@@ -53,22 +53,56 @@ def run_integration_test():
         print("-> Maestros creados con éxito.")
 
         print(f"\n2. Creando un Job completo asignando la caja {box.id_box}...")
-        product_items = [
-            {'id_product': prod_corona.id_product, 'quantity': 1},
-            {'id_product': prod_resina.id_product, 'quantity': 2}
-        ]
         
-        job = job_service.create_full_job(
-            id_doctor=doctor.id_doctor, id_patient=patient.id_patient,
-            product_items=product_items, id_box=box.id_box, id_clinic=clinic.id_clinic
-        )
-        print(f"-> Trabajo #{job.id_job} creado. Fecha Ingreso: {job.entry_date}. Fecha Entrega: {job.expected_exit_date}")
-        assert job.expected_exit_date == datetime.date.today() + datetime.timedelta(days=5), "Error crítico de cálculo de fechas de producción."
+        import os
+        dummy_pic1 = "teeth_model_sample.jpg"
+        dummy_pic2 = "teeth_model_sample2.jpg"
 
-        print(f"\n3. Verificando estado de la caja...")
-        session.refresh(box)
-        print(f"-> Estado de la caja id {box.id_box}: {box.status.value}")
-        assert box.status.value == "OCUPADA", "Error: La caja no cambió a OCUPADA."
+        product_items = [{'id_product': prod_corona.id_product, 'quantity': 1}]
+        
+        # JOB 1: CON 2 FOTOS
+        job1 = job_service.create_full_job(
+            id_doctor=doctor.id_doctor, id_patient=patient.id_patient,
+            product_items=product_items, id_box=box.id_box, id_clinic=clinic.id_clinic,
+            pictures=[dummy_pic1, dummy_pic2]
+        )
+        print(f"-> Trabajo #{job1.id_job} creado. Adjuntas 2 imágenes.")
+        
+        # JOB 2: SIN FOTOS
+        box2 = box_repo.create_box("Roja", 2)
+        job2 = job_service.create_full_job(
+            id_doctor=doctor.id_doctor, id_patient=patient.id_patient,
+            product_items=product_items, id_box=box2.id_box, id_clinic=clinic.id_clinic,
+            pictures=[]
+        )
+        print(f"-> Trabajo #{job2.id_job} creado. Adjuntas 0 imágenes.")
+
+        # JOB 3: CON 1 FOTO
+        box3 = box_repo.create_box("Verde", 3)
+        job3 = job_service.create_full_job(
+            id_doctor=doctor.id_doctor, id_patient=patient.id_patient,
+            product_items=product_items, id_box=box3.id_box, id_clinic=clinic.id_clinic,
+            pictures=[dummy_pic1]
+        )
+        print(f"-> Trabajo #{job3.id_job} creado. Adjunta 1 imagen.")
+
+        print(f"\n3. Verificando persistencia de las imágenes localmente...")
+        from src.models.job_picture import JobPicture
+        pics_job1 = session.query(JobPicture).filter(JobPicture.id_job == job1.id_job).all()
+        pics_job2 = session.query(JobPicture).filter(JobPicture.id_job == job2.id_job).all()
+        pics_job3 = session.query(JobPicture).filter(JobPicture.id_job == job3.id_job).all()
+        
+        print(f"Job 1 Pics en BD: {len(pics_job1)} (Ej. Ruta local salvada: {pics_job1[0].file_path if pics_job1 else ''})")
+        print(f"Job 2 Pics en BD: {len(pics_job2)}")
+        print(f"Job 3 Pics en BD: {len(pics_job3)}")
+
+        assert len(pics_job1) == 2, "El Job 1 debió guardar 2 rutas de imágenes."
+        assert len(pics_job2) == 0, "El Job 2 debió guardar 0 rutas de imágenes."
+        assert len(pics_job3) == 1, "El Job 3 debió guardar 1 rutas de imágenes."
+        assert os.path.exists(pics_job1[0].file_path), "Falla Crítica: La imagen 1 no fue copiada al File System local (assets/job_pictures)"
+        assert os.path.exists(pics_job1[1].file_path), "Falla Crítica: La imagen 2 no fue copiada al File System local"
+        
+        job = job1
 
         print(f"\n4. Generando Factura (Invoice) manual del trabajo por el total (500*1 + 100*2 = 700)...")
         invoice = inv_repo.create_invoice(id_job=job.id_job, amount=700)

@@ -1,4 +1,7 @@
 import datetime
+import os
+import shutil
+import uuid
 from src.database.session import SessionLocal
 from src.repositories.job_repository import JobRepository
 from src.repositories.product_repository import ProductRepository
@@ -50,8 +53,17 @@ class JobService:
             )
             self.session.add(jp)
             
-        for pic in pictures:
-            self.job_repo.add_picture(new_job.id_job, pic)
+        for pic_path in pictures:
+            if os.path.exists(pic_path):
+                job_folder = os.path.join("assets", "job_pictures", str(new_job.id_job))
+                os.makedirs(job_folder, exist_ok=True)
+                
+                ext = os.path.splitext(pic_path)[1]
+                new_filename = f"{uuid.uuid4().hex}{ext}"
+                dest_path = os.path.join(job_folder, new_filename)
+                
+                shutil.copy2(pic_path, dest_path)
+                self.job_repo.add_picture(new_job.id_job, dest_path)
             
         if id_box:
             self.box_repo.change_box_status(id_box, "OCUPADA")

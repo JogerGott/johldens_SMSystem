@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum as SqlaEnum
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum as SqlaEnum, Text
 from sqlalchemy.orm import relationship
 from src.models.base import Base
 
@@ -22,7 +22,7 @@ class Job(Base):
 
     id_job = Column(Integer, primary_key=True, index=True, autoincrement=True)
     job_type = Column(SqlaEnum(JobType), nullable=False, default=JobType.NUEVO)
-    description = Column(String(300), nullable=True)
+    description = Column(Text, nullable=True)
     
     entry_date = Column(Date, nullable=False)
     expected_exit_date = Column(Date, nullable=False)
