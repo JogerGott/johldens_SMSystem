@@ -1,0 +1,13 @@
+id_clinic,name,address,telephone,active
+1,Clínica Dental Sonrisa Feliz,"Calle 45 #12-30, Bogotá",+57 3131419610,1
+2,Centro Odontológico El Bosque,"Av. 68 #23-15, Bogotá",+57 3185108603,1
+3,Consultorio Dental Vita,"Carrera 7 #89-45, Bogotá",+57 3173341057,1
+4,Odontología Especializada Norte,"Calle 127 #19-08, Bogotá",+57 3132458591,1
+5,Clínica Oral Medellín,"Av. El Poblado #34-22, Medellín",+57 3288078673,1
+6,Dental Express Cali,"Calle 5 #38-50, Cali",+57 3111499914,1
+7,Sonrisas Perfectas,"Carrera 15 #93-47, Bogotá",+57 3124668136,1
+8,Centro Dental Familiar,"Calle 80 #56-12, Bogotá",+57 3179478454,1
+9,Odontología Integral Sur,"Autopista Sur #48-30, Bogotá",+57 3291445199,1
+10,Clínica Dental Premium,"Av. Suba #115-50, Bogotá",+57 3274335942,1
+11,Dentistería Moderna,"Calle 63 #14-78, Bogotá",+57 3278038374,1
+12,Oral Health Center,"Carrera 11 #82-31, Bogotá",+57 3178536477,0

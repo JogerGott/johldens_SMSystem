@@ -23,6 +23,9 @@ class InvoiceRepository:
 
     def check_invoice(self, id_invoice: int) -> Invoice:
         return self.session.query(Invoice).filter(Invoice.id_invoice == id_invoice).first()
+        
+    def list_all_invoices(self):
+        return self.session.query(Invoice).all()
 
     def list_invoices_by_doctor(self, id_doctor: str):
         return self.session.query(Invoice).join(Job).filter(Job.id_doctor == id_doctor).all()

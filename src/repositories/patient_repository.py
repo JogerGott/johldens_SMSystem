@@ -27,5 +27,8 @@ class PatientRepository:
 
     # No hay fecha de creación en el paciente, pero si tuvieramos un created_at podriamos filtrarlo
     def list_patients_by_month(self, month: int, year: int):
-        # Placeholder para futura implementación de registro de fecha si se agrega al SQL Table
-        pass
+        # Temporalmente retorna todos debido a la ausencia de campo fecha en tabla
+        return self.session.query(Patient).all()
+        
+    def list_all_patients(self):
+        return self.session.query(Patient).all()

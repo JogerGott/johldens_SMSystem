@@ -31,5 +31,7 @@ class PaymentRepository:
         return self.session.query(Payment).filter(Payment.id_payment == id_payment).first()
 
     def list_payments_by_invoice(self, id_invoice: int):
-        return self.session.query(Payment).filter(Payment.id_invoice == id_invoice, Payment.status == True).all()
+        return self.session.query(Payment).filter(Payment.id_invoice == id_invoice).all()
 
+    def list_all_payments(self):
+        return self.session.query(Payment).filter(Payment.status == True).order_by(Payment.pay_date.desc()).all()

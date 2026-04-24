@@ -1,0 +1,42 @@
+id_invoice,id_job,invoice_date,detail,amount,lending_balance,pay_state
+1,1,2025-02-28,Trabajo #1 — Corona unitaria diente 11,115878.39,115878.39,PENDIENTE
+2,3,2026-01-15,Trabajo #3 — Prótesis superior completa,1933187.88,0.0,PAGADO
+3,4,2025-10-26,Trabajo #4 — Incrustación premolar 24,381693.37,381693.37,PENDIENTE
+4,6,2025-12-20,Trabajo #6 — Encerado funcional sector posterior,463168.29,463168.29,PENDIENTE
+5,9,2025-08-02,Trabajo #9 — Carilla estética sector anterior,740913.0,740913.0,PENDIENTE
+6,12,2025-08-12,Trabajo #12 — Corona unitaria diente 11,1638857.9,1638857.9,PENDIENTE
+7,14,2025-07-04,Trabajo #14 — Encerado funcional sector posterior,2446481.68,2446481.68,PENDIENTE
+8,16,2025-01-16,Trabajo #16 — Corona posterior molar 36,2923435.28,1751326.93,PARCIAL
+9,17,2025-12-23,Trabajo #17 — Implante diente 21 unitario,239087.43,0.0,PAGADO
+10,18,2025-09-26,Trabajo #18 — Incrustación premolar 24,2366827.05,2366827.05,PENDIENTE
+11,21,2025-06-16,Trabajo #21 — Guarda oclusal bruxismo,147161.25,147161.25,PENDIENTE
+12,22,2025-12-19,Trabajo #22 — Reparación prótesis existente,230237.02,230237.02,PENDIENTE
+13,26,2025-08-30,Trabajo #26 — Blanqueamiento arco superior,2899451.1,0.0,PAGADO
+14,28,2026-02-05,Trabajo #28 — Puente anterior 3 unidades,1616761.71,1616761.71,PENDIENTE
+15,29,2025-09-04,Trabajo #29 — Retenedor colado sector superior,818945.2,0.0,PAGADO
+16,30,2025-03-16,Trabajo #30 — Reparación prótesis existente,752513.86,404063.71,PARCIAL
+17,31,2026-03-09,Trabajo #31 — Corona de zirconio molar 46,477182.36,213054.85,PARCIAL
+18,32,2025-04-10,Trabajo #32 — Prótesis parcial removible maxilar,548122.01,346761.94,PARCIAL
+19,33,2025-12-07,Trabajo #33 — Implante diente 21 unitario,1175982.12,483314.2,PARCIAL
+20,40,2025-08-14,Trabajo #40 — Guarda oclusal bruxismo,295626.03,295626.03,PENDIENTE
+21,42,2026-01-26,Trabajo #42 — Encerado funcional sector posterior,4762257.24,4762257.24,PENDIENTE
+22,43,2025-07-29,Trabajo #43 — Prótesis superior completa,766317.47,0.0,PAGADO
+23,45,2025-05-05,Trabajo #45 — Reparación prótesis existente,242544.39,242544.39,PENDIENTE
+24,52,2025-01-30,Trabajo #52 — Incrustación premolar 24,80967.13,0.0,PAGADO
+25,55,2025-10-08,Trabajo #55 — Modelo diagnóstico estudio,1271074.9,1271074.9,PENDIENTE
+26,56,2025-01-20,Trabajo #56 — Incrustación premolar 24,822921.02,563151.86,PARCIAL
+27,57,2026-01-03,Trabajo #57 — Blanqueamiento arco superior,618809.77,368005.39,PARCIAL
+28,58,2025-11-25,Trabajo #58 — Incrustación premolar 24,3040580.45,3040580.45,PENDIENTE
+29,60,2026-02-02,Trabajo #60 — Corona posterior molar 36,2452438.5,0.0,PAGADO
+30,61,2025-06-30,Trabajo #61 — Corona posterior molar 36,590024.04,242272.16,PARCIAL
+31,63,2025-02-23,Trabajo #63 — Modelo diagnóstico estudio,1651837.85,1651837.85,PENDIENTE
+32,64,2025-12-29,Trabajo #64 — Reparación prótesis existente,81083.23,35714.78,PARCIAL
+33,65,2025-06-09,Trabajo #65 — Prótesis parcial removible maxilar,1777826.92,1777826.92,PENDIENTE
+34,66,2025-07-13,Trabajo #66 — Incrustación premolar 24,1057773.26,0.0,PAGADO
+35,67,2025-06-26,Trabajo #67 — Prótesis parcial removible maxilar,1387535.61,456609.84,PARCIAL
+36,70,2025-06-09,Trabajo #70 — Prótesis superior completa,1291199.16,0.0,PAGADO
+37,74,2025-09-22,Trabajo #74 — Corona unitaria diente 11,242331.51,242331.51,PENDIENTE
+38,75,2025-03-15,Trabajo #75 — Prótesis superior completa,876921.2,876921.2,PENDIENTE
+39,76,2025-03-29,Trabajo #76 — Prótesis superior completa,2620405.5,0.0,PAGADO
+40,77,2025-10-29,Trabajo #77 — Reparación prótesis existente,360956.85,0.0,PAGADO
+41,79,2025-11-28,Trabajo #79 — Reparación prótesis existente,576814.0,0.0,PAGADO

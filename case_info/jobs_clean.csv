@@ -1,0 +1,9 @@
+id_job,job_type,description,entry_date,expected_exit_date,exit_date,status,id_doctor,id_patient,id_box,id_clinic
+1,NUEVO,Corona unitaria diente 11,2025-02-17,2025-03-02,2025-03-04,TERMINADO,10076758,661333669,,10
+2,NUEVO,Blanqueamiento arco superior,2026-01-30,2026-02-04,,APROBADO,10289289,165452690,6.0,7
+3,GARANTIA,Protesis superior completa,2025-12-28,2026-01-06,2026-01-06,DESPACHADO,31472420,677280546,,11
+4,NUEVO,Incrustacion premolar 24,2025-10-07,2025-10-10,2025-10-11,TERMINADO,39436733,670292350,,3
+5,NUEVO,Carilla estetica sector anterior,2025-06-07,2025-06-15,,EN_PROCESO,69476001,172972420,9.0,9
+6,NUEVO,Encerado funcional sector posterior,2025-12-08,2025-12-12,2025-12-15,TERMINADO,43101783,694019365,,9
+7,NUEVO,Corona unitaria diente 11,2025-05-02,2025-05-07,,EN_REVISION,69476001,318610946,10.0,9
+8,NUEVO,Puente anterior 3 unidades,2026-02-05,2026-02-14,,APROBADO,98447167,364371717,9.0,7

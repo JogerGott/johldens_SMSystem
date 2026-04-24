@@ -1,0 +1,146 @@
+tengo las siguentes bases de datos:
+
+USE db_proyect;
+
+
+CREATE TABLE clinics (
+	id_clinic INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    address VARCHAR(255) NOT NULL,
+    telephone VARCHAR(20) NOT NULL UNIQUE,
+    active BOOL NOT NULL DEFAULT 1
+);
+
+
+CREATE TABLE boxes (
+	id_box INT AUTO_INCREMENT PRIMARY KEY,
+    color ENUM('NEGRA','AZUL','ROJA','VERDE', 'AMARILLA', 'GRIS') NOT NULL,
+    number INT NOT NULL,
+    status ENUM('LIBRE','OCUPADA','PERDIDA','INACTIVA') NOT NULL DEFAULT 'LIBRE'
+);
+
+CREATE TABLE doctors (
+	id_doctor VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    telephone VARCHAR(20) UNIQUE,
+    address VARCHAR(255),
+    status BOOL NOT NULL DEFAULT 1,
+    
+    id_clinic INT,
+    FOREIGN KEY (id_clinic) REFERENCES clinics(id_clinic) ON DELETE SET NULL
+);
+
+CREATE TABLE patients (
+	id_patient VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50),
+    
+    id_doctor VARCHAR(20) NOT NULL,
+    id_clinic INT,
+    
+    FOREIGN KEY(id_doctor) REFERENCES doctors(id_doctor) ON DELETE RESTRICT,
+    FOREIGN KEY(id_clinic) REFERENCES clinics(id_clinic) ON DELETE SET NULL
+    
+);
+
+CREATE TABLE products (
+	id_product INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    price DECIMAL(10,2) NOT NULL,
+    production_time INT NOT NULL,
+    status BOOL NOT NULL DEFAULT 1
+);
+
+CREATE TABLE jobs (
+	id_job INT AUTO_INCREMENT PRIMARY KEY,
+    job_type ENUM('NUEVO','REPETICION','GARANTIA') NOT NULL DEFAULT 'NUEVO',
+    description TEXT, 
+    entry_date DATE NOT NULL DEFAULT (CURRENT_DATE()),
+    expected_exit_date DATE NOT NULL,
+    exit_date DATE,
+    status ENUM('REGISTRADO','EN_PROCESO','EN_REVISION','APROBADO','TERMINADO','FACTURADO','DESPACHADO') NOT NULL DEFAULT 'REGISTRADO',
+    
+    id_doctor VARCHAR(20) NOT NULL,
+    id_patient VARCHAR(20) NOT NULL,
+    id_box INT,
+    id_clinic INT,
+    
+    FOREIGN KEY(id_doctor) REFERENCES doctors(id_doctor) ON DELETE RESTRICT,
+    FOREIGN KEY(id_patient) REFERENCES patients(id_patient) ON DELETE RESTRICT,
+    FOREIGN KEY(id_box) REFERENCES boxes(id_box) ON DELETE RESTRICT,
+    FOREIGN KEY(id_clinic) REFERENCES clinics(id_clinic) ON DELETE RESTRICT
+    
+);
+
+CREATE TABLE job_products (
+	id_product INT NOT NULL,
+    id_job INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    historic_price DECIMAL(10,2) NOT NULL,
+    
+    PRIMARY KEY (id_job, id_product),
+    
+   FOREIGN KEY(id_product) REFERENCES products(id_product) ON DELETE RESTRICT,
+   FOREIGN KEY(id_job) REFERENCES jobs(id_job) ON DELETE RESTRICT
+);
+
+CREATE TABLE job_pictures (
+	id_job_picture INT AUTO_INCREMENT PRIMARY KEY,
+    file_path VARCHAR(255) NOT NULL,
+    
+    id_job INT NOT NULL,
+    FOREIGN KEY(id_job) REFERENCES jobs(id_job) ON DELETE CASCADE
+);
+
+CREATE TABLE invoices (
+    id_invoice INT AUTO_INCREMENT PRIMARY KEY,
+    id_job INT NOT NULL UNIQUE,
+    invoice_date DATE NOT NULL DEFAULT (CURRENT_DATE()),
+    amount DECIMAL(10,2) NOT NULL,
+    lending_balance DECIMAL(10,2) NOT NULL,
+    pay_state ENUM('PAGADO','PARCIAL','PENDIENTE') NOT NULL DEFAULT 'PENDIENTE',
+
+    FOREIGN KEY (id_job) REFERENCES jobs(id_job) ON DELETE RESTRICT
+);
+
+CREATE TABLE payments (
+    id_payment INT AUTO_INCREMENT PRIMARY KEY,
+    id_invoice INT NOT NULL,
+    pay_date DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP()),
+    payment_amount DECIMAL(10,2) NOT NULL,
+    payment_type ENUM('EFECTIVO','TRANSFERENCIA','CHEQUE','OTRO') NOT NULL DEFAULT 'EFECTIVO',
+    status BOOL NOT NULL DEFAULT 1,
+
+    FOREIGN KEY (id_invoice) REFERENCES invoices(id_invoice) ON DELETE RESTRICT
+);
+
+Estas bases de datos siguen la siguente logica de programa
+
+Una CLINIC tiene que tener como minimo un DOCTOR
+Un DOCTOR puede o no pertenecer a una CLINIC
+Un PATIENT puede o no pertenecer a una CLINIC
+Un PATIENT debe tener un DOCTOR
+Un JOB se guarda en una BOX
+Una BOX UNICAMENE guarda un nuevo JOB si la BOX esta disponible "vacia"
+Una BOX solo esta "vacia" se desocupa hasta que el JOB se envia
+Un JOB puede tener muchos PRODUCTS o como minimo uno
+INVOICE tiene la suma total de todos los productos pedidos en JOB
+Una INVOICE puede recibir varios PAYMENTS
+Un JOB puede tener varios PRODUCT pues dentro de un mismo trabajo puden haber mas de un producto 
+Al crear un CLINIC, DOCTOR, PRODUCT debe quedar por default como activo "TRUE" en su status
+Al crearce un JOB debe quedar por default como REGISTRADO en su status
+
+Requerimientos del Cliente 
+El DOCTOR debe poder enviar las fotos "o no" diretamente a la aplicacion JOB
+El DOCTOR debe poder ver en que estado o proceso va su trabajo
+Los tabajos deben tener una fecha de ingreso y una fecha estimada de entrega (cada producto tiene cierto tiempo en produccion)
+Se debe poder entregar un Informa de trabajos para ese dia, donde muestre los trabajos que deberian tenerse terminados a la fecha, eso conbase en la fecha estimada deentrega.
+Se deben poder generar facturas (INVOICE) para llevar contabilidad.
+Se debe poder generar un informe mensual de la facturacion hecho por CLINICA y por DOCTOR
+El Usuario quiere explorar la posibilidad de poder llevar un rastreo del estado actual del trabajo en tiempo real (Tipo seguimiento de envio o Shipping)
+El usuario quiere poder tener un repote de los trabajops que deben terminarse para la fecha actual, se logra mediante la suma de la fecha de entrada del trabajo mas el tiempo en produccion que demore el producto, entry_date + production_time = expected_exit_date
+
+
+Debes crear los datos en un file .CVS para cada una de las tablas, cada tabla debe cumplir con la logica y especificaciones mencionadas, cada tabla debe contar con un minimo de 15 registros. Asegurate que los datos generados tengan integridad entre ellos.

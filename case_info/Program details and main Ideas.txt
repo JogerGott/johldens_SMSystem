@@ -1,0 +1,140 @@
+Program details and main Ideas
+
+okay vamos a hacer estoy bien el objetivo es crear una aplicacion desktop que funcione con usando:
+ python
+PyQt
+MySQL
+
+📌 Proyecto: State Management System – Joldens
+
+State Management System de Joldens, es un sistema de gestión desarrollado en Microsoft Access orientado a la administración integral de clínicas dentales.
+
+El trabajo realizado incluye:
+
+ 1. Diseño de Base de Datos Relacional
+ 2. Sistema de Gestión de Estados (State Management)
+ 3. Formularios (Forms)
+ 4. Reportes
+ 5. Creacion de graficos interactivos
+🎯 Objetivo del Programa
+
+El objetivo del State Management System de Joldens es:
+
+Centralizar y automatizar la gestión operativa y financiera de clínicas dentales mediante un sistema estructurado de control de estados que permita trazabilidad completa de trabajos, facturación y pagos.
+
+En términos técnicos:
+
+Reducir errores manuales
+
+Controlar flujo de trabajo
+
+Mejorar visibilidad financiera
+
+Permitir análisis estadístico
+
+Garantizar integridad de datos
+
+
+He creado las diagramas de ER el "ER Basic" nos muestra como tengo planteado la funcion de cada uno y el "" nos muestra los atributos de cada entidad y el relacion entre tablas mediante PK y FK.
+Tambien encontraras las:
+Especificaciones del programa
+Una CLINIC tiene que tener como minimo un DOCTOR
+Un DOCTOR puede o no pertenecer a una CLINIC
+Un PATIENT puede o no pertenecer a una CLINIC
+Un PATIENT debe tener un DOCTOR
+Un JOB se guarda en una BOX
+Una BOX UNICAMENE guarda un nuevo JOB si la BOX esta disponible "vacia"
+Una BOX solo esta "vacia" se desocupa hasta que el JOB se envia
+Un JOB puede tener muchos PRODUCTS o como minimo uno
+INVOICE tiene la suma total de todos los productos pedidos en JOB
+Una INVOICE puede recibir varios PAYMENTS
+Un JOB puede tener varios PRODUCT pues dentro de un mismo trabajo puden haber mas de un producto 
+Al crear un CLINIC, DOCTOR, PRODUCT debe quedar por default como activo "TRUE" en su status
+Al crearce un JOB debe quedar por default como REGISTRADO en su status
+
+Metodos o funciones que debe poder desarrollar cda entidad
+
+BOX
+create_box(color,numer)
+check_box(id_box)
+list_available_box()
+list_available_box_by_color(color)
+change_box_status(id_box, status)
+
+JOB
+create_job(id_doctor, id_patient, id_product, id_box)
+check_job(id_job)
+list_job_by_status(status)
+add_picture(id_job)
+list_today_jobs()
+assign_box(id_job, id_box)
+release_box(id_job)
+change_job_status(id_job)
+
+DOCTOR
+create_doctor(id_doctor,name, last_name, email, telephone, id_clinic)
+check_doctor(id_doctor)
+update_doctor_info(datos)
+list_doctors()
+list_doctors_by_clinic(id_clinic)
+
+CLINIC
+create_clinic(id_clinic, name, address, telephone)
+check_clinic(id_clinic)
+update_clinic(id_clinic, datos)
+list_clinics()
+
+PATIENT
+create_patient(id_patient, name, lastname)
+check_patient(id_patient)
+update_patient_info(datos)
+list_patients_by_month 
+
+PRODUCT
+create_product(id_product, name, price, production_time)
+check_product(id_product)
+list_active_products()
+
+INVOICE
+create_invoice(id_job, amount)
+check_invoice(id_invoice)
+list_invoices_by_doctor(id_doctor)
+list_invoices_by_clinic(id_doctor)
+list_invoices_by_paystate(paystate)
+add_pay_invoice(id_invoice, amount)
+lending_balance_by_doctor(id_doctor)
+lending_balance_by_clinic(id_clinic)
+total_invoices_last_month_by_doctor(id_doctor)
+total_invoices_last_month_by_clinic(id_clinic)
+total_billed_by_doctor(id_doctor)
+total_billed_by_clinic(id_doctor)
+update_paystate(id_invoice)
+check_existence_invoice_for_job(id_job)
+
+PAYMENT
+create_payment(id_invoice, amount, payment_type)
+check_payment(id_pament)
+list_payments_by_invoice(id_invoice)
+
+
+Requerimientos del Cliente 
+El DOCTOR debe poder enviar las fotos "o no" diretamente a la aplicacion JOB
+El DOCTOR debe poder ver en que estado o proceso va su trabajo
+Los tabajos deben tener una fecha de ingreso y una fecha estimada de entrega (cada producto tiene cierto tiempo en produccion)
+Se debe poder entregar un Informa de trabajos para ese dia, donde muestre los trabajos que deberian tenerse terminados a la fecha, eso conbase en la fecha estimada deentrega.
+Se deben poder generar facturas (INVOICE) para llevar contabilidad.
+Se debe poder generar un informe mensual de la facturacion hecho por CLINICA y por DOCTOR
+El Usuario quiere explorar la posibilidad de poder llevar un rastreo del estado actual del trabajo en tiempo real (Tipo seguimiento de envio o Shipping)
+El usuario quiere poder tener un repote de los trabajops que deben terminarse para la fecha actual, se logra mediante la suma de la fecha de entrada del trabajo mas el tiempo en produccion que demore el producto, entry_date + production_time = expected_exit_date
+
+toda esta informacion la encontras en lo files, debes LEER y RE_LEER esta informacion:
+Johldens.drawio path: case_info\Johldens.drawio
+Johldens.drawio.html path: case_info\Johldens.drawio.html
+Johldens.drawio.pdf path: case_info\Johldens.drawio.pdf
+Detalle de Tablas ER path: case_info\Detalle de Tablas ER.txt
+
+
+Chequea y resctifica que la inforacion tenga sentido ()en cuanto al flujo de los diagramas.
+Realiza las preguntas que sean necesarias antes de iniciar a crear el prgeama.
+Crea toda la estrucura del programa: menus, modulos, repositorios, servicios, tests, UI, database
+Has un prgrama totalmente funcional que cumpla con todo lo anterior descrito
