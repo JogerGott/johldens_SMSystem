@@ -385,168 +385,166 @@ class InvoicesView(QWidget):
         
         session = SessionLocal()
         inv_repo = InvoiceRepository(session)
-        pay_repo = PaymentRepository(session)
         inv = inv_repo.check_invoice(id_inv)
         if not inv:
             session.close()
             return
             
-        payments = pay_repo.list_payments_by_invoice(id_inv)
+        doc_name = inv.job.doctor.name if inv.job and inv.job.doctor else "N/A"
+        doc_lastname = inv.job.doctor.last_name if inv.job and inv.job.doctor else ""
+        doc_email = inv.job.doctor.email if inv.job and inv.job.doctor else "N/A"
+        doc_phone = inv.job.doctor.telephone if inv.job and inv.job.doctor else "N/A"
         
-        doc_name = f"{inv.job.doctor.name} {inv.job.doctor.last_name}" if inv.job and inv.job.doctor else "N/A"
         clin_name = inv.job.clinic.name if inv.job and inv.job.clinic else "N/A"
         
-        html = f"""
-        <html>
-        <head>
-            <style>
-                body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; margin: 0; padding: 20px; }}
-                .header {{ border-bottom: 3px solid #2c3e50; padding-bottom: 20px; margin-bottom: 30px; }}
-                .header table {{ width: 100%; }}
-                .header h1 {{ margin: 0; color: #2c3e50; font-size: 28px; letter-spacing: 1px; text-transform: uppercase; }}
-                .header h3 {{ margin: 5px 0 0 0; color: #7f8c8d; font-size: 14px; font-weight: normal; }}
-                .invoice-title {{ text-align: right; }}
-                .invoice-title h2 {{ margin: 0; color: #34495e; font-size: 24px; }}
-                .invoice-title p {{ margin: 5px 0 0 0; font-size: 14px; color: #7f8c8d; }}
-                
-                .info-section {{ width: 100%; margin-bottom: 30px; }}
-                .info-section td {{ vertical-align: top; width: 50%; }}
-                .box {{ border: 1px solid #ecf0f1; background-color: #fcfcfc; padding: 15px; border-radius: 4px; }}
-                .box h4 {{ margin-top: 0; color: #2980b9; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; }}
-                
-                table.data {{ width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }}
-                table.data th {{ background-color: #2c3e50; color: white; padding: 10px; text-align: left; font-weight: bold; border: 1px solid #2c3e50; }}
-                table.data td {{ border: 1px solid #bdc3c7; padding: 10px; }}
-                table.data tr:nth-child(even) {{ background-color: #f9f9f9; }}
-                
-                .totals {{ width: 100%; }}
-                .totals td {{ padding: 8px; text-align: right; }}
-                .totals .label {{ font-weight: bold; color: #34495e; }}
-                .totals .value {{ font-size: 14px; width: 120px; }}
-                .totals .grand-total {{ font-size: 16px; font-weight: bold; color: #27ae60; border-top: 2px solid #bdc3c7; padding-top: 10px; }}
-                .totals .balance {{ font-size: 16px; font-weight: bold; color: {'#27ae60' if inv.pay_state.value == 'PAGADO' else '#e74c3c'}; }}
-                
-                .footer {{ margin-top: 50px; text-align: center; font-size: 11px; color: #95a5a6; border-top: 1px solid #ecf0f1; padding-top: 20px; }}
-                .status-badge {{ display: inline-block; padding: 5px 10px; background-color: {'#27ae60' if inv.pay_state.value == 'PAGADO' else '#f39c12'}; color: white; font-weight: bold; border-radius: 3px; font-size: 12px; }}
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <table>
-                    <tr>
-                        <td>
-                            <h1>JOLDENS</h1>
-                            <h3>Dental Management System</h3>
-                            <p style="margin-top:10px; font-size: 12px; color: #7f8c8d;">
-                                Tel: +1 234 567 8900<br/>
-                                Email: facturacion@joldens.com<br/>
-                                Web: www.joldens.com
-                            </p>
-                        </td>
-                        <td class="invoice-title">
-                            <h2>FACTURA COMERCIAL</h2>
-                            <p><b>NRO:</b> FAC-{inv.id_invoice}</p>
-                            <p><b>FECHA:</b> {inv.invoice_date.strftime('%Y-%m-%d')}</p>
-                            <p><b>ESTADO:</b> <span class="status-badge">{inv.pay_state.value}</span></p>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            
-            <table class="info-section">
-                <tr>
-                    <td style="padding-right: 10px;">
-                        <div class="box">
-                            <h4>FACTURAR A:</h4>
-                            <p><b>Clínica:</b> {clin_name}<br/>
-                            <b>Doctor:</b> Dr. {doc_name}</p>
-                        </div>
-                    </td>
-                    <td style="padding-left: 10px;">
-                        <div class="box">
-                            <h4>DETALLES DEL SERVICIO:</h4>
-                            <p><b>Orden de Ref:</b> ORD-{inv.id_job}<br/>
-                            <b>Fecha Orden:</b> {inv.job.entry_date if inv.job else 'N/A'}</p>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            
-            <table class="data">
-                <tr>
-                    <th style="width: 10%;">CANT.</th>
-                    <th style="width: 50%;">DESCRIPCIÓN DEL TRATAMIENTO</th>
-                    <th style="width: 20%; text-align: right;">PRECIO UNIT.</th>
-                    <th style="width: 20%; text-align: right;">SUBTOTAL</th>
-                </tr>
-        """
-        
+        pat_name = inv.job.patient.name if inv.job and inv.job.patient else "N/A"
+        pat_lastname = inv.job.patient.last_name if inv.job and inv.job.patient else ""
+
+        products_list = []
         if inv.job:
             for p in inv.job.products:
                 pname = p.product.name if p.product else "Desconocido"
-                subt = p.quantity * float(p.historic_price)
-                html += f"""
-                <tr>
-                    <td style="text-align: center;">{p.quantity}</td>
-                    <td>{pname} <span style="font-size:10px; color:#7f8c8d;">(ID:{p.id_product})</span></td>
-                    <td style="text-align: right;">${float(p.historic_price):,.2f}</td>
-                    <td style="text-align: right;">${subt:,.2f}</td>
-                </tr>
-                """
-                
-        html += f"""
-            </table>
-            
-            <table class="totals">
-                <tr>
-                    <td class="label">Monto Total Facturado:</td>
-                    <td class="value grand-total">${inv.amount:,.2f}</td>
-                </tr>
-                <tr>
-                    <td class="label">Saldo Restante por Cobrar:</td>
-                    <td class="value balance">${inv.lending_balance:,.2f}</td>
-                </tr>
-            </table>
-            
-            <h4 style="color: #2c3e50; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; margin-top: 40px;">Registro de Pagos Aplicados</h4>
-            <table class="data" style="width: 70%;">
-                <tr>
-                    <th>Fecha y Hora</th>
-                    <th>Método de Pago</th>
-                    <th style="text-align: right;">Monto Abonado</th>
-                </tr>
-        """
-        if not payments:
-            html += "<tr><td colspan='3' style='text-align: center; color: #7f8c8d;'>No se han registrado pagos para esta factura.</td></tr>"
-        else:
-            for pay in payments:
-                html += f"""
-                <tr>
-                    <td>{pay.pay_date.strftime('%Y-%m-%d %H:%M')}</td>
-                    <td>{pay.payment_type.value}</td>
-                    <td style="text-align: right;">${pay.payment_amount:,.2f}</td>
-                </tr>
-                """
-                
-        html += """
-            </table>
-            
-            <div class="footer">
-                Documento generado electrónicamente por <b>Joldens Dental Management System</b>.<br/>
-                Powered by Antigravity Technology.
-            </div>
-        </body>
-        </html>
-        """
+                products_list.append({
+                    "name": pname,
+                    "quantity": p.quantity,
+                    "price": float(p.historic_price)
+                })
+
+        data = {
+            "invoice_id": inv.id_invoice,
+            "invoice_date": str(inv.invoice_date),
+            "pay_state": inv.pay_state.value,
+            "doctor_name": doc_name,
+            "doctor_lastname": doc_lastname,
+            "doctor_email": doc_email,
+            "doctor_phone": doc_phone,
+            "clinic_name": clin_name,
+            "patient_name": pat_name,
+            "patient_lastname": pat_lastname,
+            "job_description": inv.job.description if inv.job and inv.job.description else "Tratamientos de Laboratorio",
+            "entry_date": str(inv.job.entry_date) if inv.job and inv.job.entry_date else "N/A",
+            "expected_exit_date": str(inv.job.expected_exit_date) if inv.job and inv.job.expected_exit_date else "N/A",
+            "job_status": inv.job.status.value if inv.job else "N/A",
+            "products": products_list,
+            "lending_balance": float(inv.lending_balance)
+        }
         
-        document = QTextDocument()
-        document.setHtml(html)
-        
-        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
-        printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
-        printer.setOutputFileName(file_path)
-        
-        document.print(printer)
+        try:
+            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+            from reportlab.lib import colors
+            from reportlab.lib.pagesizes import letter
+            from reportlab.lib.styles import getSampleStyleSheet
+            
+            doc = SimpleDocTemplate(file_path, pagesize=letter)
+            styles = getSampleStyleSheet()
+            elements = []
+
+            title = Paragraph("<b>JOHLDENS DENTAL LAB</b>", styles["Title"])
+            subtitle = Paragraph("Factura Electrónica", styles["Normal"])
+            elements.append(title)
+            elements.append(subtitle)
+            elements.append(Spacer(1, 12))
+
+            info_data = [
+                ["Factura #", data["invoice_id"]],
+                ["Fecha", data["invoice_date"]],
+                ["Estado", data["pay_state"]],
+            ]
+            table_info = Table(info_data, colWidths=[150, 250])
+            table_info.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, -1), colors.whitesmoke),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+            ]))
+            elements.append(table_info)
+            elements.append(Spacer(1, 20))
+
+            doctor_info = [
+                ["Doctor", f"{data['doctor_name']} {data['doctor_lastname']}"],
+                ["Email", data["doctor_email"]],
+                ["Teléfono", data["doctor_phone"]],
+                ["Clínica", data["clinic_name"]],
+            ]
+            table_doc = Table(doctor_info, colWidths=[150, 250])
+            table_doc.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, -1), colors.lightgrey),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+            ]))
+            elements.append(Paragraph("<b>Información del Cliente</b>", styles["Heading3"]))
+            elements.append(table_doc)
+            elements.append(Spacer(1, 20))
+
+            patient_info = [
+                ["Paciente", f"{data['patient_name']} {data['patient_lastname']}"],
+            ]
+            table_pat = Table(patient_info, colWidths=[150, 250])
+            table_pat.setStyle(TableStyle([
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+            ]))
+            elements.append(Paragraph("<b>Paciente</b>", styles["Heading3"]))
+            elements.append(table_pat)
+            elements.append(Spacer(1, 20))
+
+            job_info = [
+                ["Trabajo", data["job_description"]],
+                ["Fecha ingreso", data["entry_date"]],
+                ["Fecha entrega", data["expected_exit_date"]],
+                ["Estado", data["job_status"]],
+            ]
+            table_job = Table(job_info, colWidths=[150, 250])
+            table_job.setStyle(TableStyle([
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+            ]))
+            elements.append(Paragraph("<b>Detalle del Trabajo</b>", styles["Heading3"]))
+            elements.append(table_job)
+            elements.append(Spacer(1, 20))
+
+            product_data = [["Producto", "Cantidad", "Precio Unitario", "Total"]]
+            total = 0
+            for p in data["products"]:
+                subtotal = p["quantity"] * p["price"]
+                total += subtotal
+                product_data.append([
+                    p["name"],
+                    p["quantity"],
+                    f"${p['price']:,.2f}",
+                    f"${subtotal:,.2f}"
+                ])
+            table_prod = Table(product_data, colWidths=[150, 70, 100, 80])
+            table_prod.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+            ]))
+            elements.append(Paragraph("<b>Productos</b>", styles["Heading3"]))
+            elements.append(table_prod)
+            elements.append(Spacer(1, 20))
+
+            totals_data = [
+                ["Total", f"${total:,.2f}"],
+                ["Saldo Pendiente", f"${data['lending_balance']:,.2f}"],
+            ]
+            table_tot = Table(totals_data, colWidths=[200, 150])
+            table_tot.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, -1), colors.lightgrey),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+            ]))
+            elements.append(table_tot)
+            elements.append(Spacer(1, 20))
+
+            footer = Paragraph(
+                "Gracias por confiar en Johldens Dental Lab.<br/>"
+                "Este documento es una factura electrónica válida emitida via ASCENT.",
+                styles["Normal"]
+            )
+            elements.append(footer)
+            
+            doc.build(elements)
+            
+        except ImportError:
+            QMessageBox.critical(self, "Error", "La librería 'reportlab' no está instalada.")
+            session.close()
+            return
+            
         session.close()
         
         # Abrir carpeta

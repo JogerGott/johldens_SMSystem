@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFrame, QStackedWidget, QMessageBox, QDialog
-from PyQt6.QtGui import QFont, QIcon, QColor, QPalette
+from PyQt6.QtGui import QFont, QIcon, QColor, QPalette, QPixmap
 from PyQt6.QtCore import Qt, QTimer
 
 # Importar Componentes
@@ -147,7 +147,15 @@ class WelcomeDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
-        self.setFixedSize(550, 350)
+        # Ventana 7% más grande
+        self.setFixedSize(600, 400)
+        
+        # Centrar en la pantalla
+        screen = QApplication.primaryScreen().geometry()
+        x = (screen.width() - self.width()) // 2
+        y = (screen.height() - self.height()) // 2
+        self.move(x, y)
+        
         self.setStyleSheet("""
             QDialog {
                 background-color: #1a252f;
@@ -156,18 +164,18 @@ class WelcomeDialog(QDialog):
             }
             QLabel#Title {
                 color: #ecf0f1;
-                font-size: 28px;
+                font-size: 30px;
                 font-weight: bold;
                 letter-spacing: 1px;
             }
             QLabel#Subtitle {
                 color: #bdc3c7;
-                font-size: 16px;
-                margin-bottom: 20px;
+                font-size: 18px;
+                margin-bottom: 10px;
             }
             QLabel#Powered {
                 color: #3498db;
-                font-size: 13px;
+                font-size: 14px;
                 font-weight: bold;
                 letter-spacing: 2px;
             }
@@ -176,8 +184,8 @@ class WelcomeDialog(QDialog):
                 color: white;
                 border: none;
                 border-radius: 5px;
-                padding: 12px 30px;
-                font-size: 14px;
+                padding: 14px 35px;
+                font-size: 16px;
                 font-weight: bold;
             }
             QPushButton#StartBtn:hover {
@@ -188,7 +196,18 @@ class WelcomeDialog(QDialog):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(15)
-
+        
+        # Logo de ASCENT centrado
+        lbl_logo = QLabel()
+        lbl_logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        import os
+        logo_path = os.path.abspath(os.path.join("case_info", "logo.png"))
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            # Escalar el logo a un tamaño razonable
+            pixmap = pixmap.scaled(120, 120, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            lbl_logo.setPixmap(pixmap)
+        
         lbl_welcome = QLabel("WELCOME TO JOLDENS")
         lbl_welcome.setObjectName("Title")
         lbl_welcome.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -197,8 +216,8 @@ class WelcomeDialog(QDialog):
         lbl_sub.setObjectName("Subtitle")
         lbl_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-        # Spacer for centering
         layout.addStretch()
+        layout.addWidget(lbl_logo)
         layout.addWidget(lbl_welcome)
         layout.addWidget(lbl_sub)
         
@@ -226,7 +245,8 @@ class WelcomeDialog(QDialog):
 def start_app():
     app = QApplication(sys.argv)
     app.setStyleSheet(GLOBAL_STYLESHEET)
-    font = QFont("Segoe UI", 10)
+    # Aumentar la UI un 5-10% global
+    font = QFont("Segoe UI", 11)
     app.setFont(font)
     
     window = MainWindow()
