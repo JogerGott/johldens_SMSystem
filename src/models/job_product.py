@@ -4,10 +4,8 @@ from src.models.base import Base
 
 class JobProduct(Base):
     __tablename__ = "job_products"
-
-    id_job_product = Column(Integer, primary_key=True, index=True)
-    id_job = Column(Integer, ForeignKey("jobs.id_job"), nullable=False)
-    id_product = Column(Integer, ForeignKey("products.id_product"), nullable=False)
+    id_job = Column(Integer, ForeignKey("jobs.id_job", ondelete="RESTRICT"), primary_key=True)
+    id_product = Column(Integer, ForeignKey("products.id_product", ondelete="RESTRICT"), primary_key=True)
     
     quantity = Column(Integer, nullable=False, default=1)
     # Guardamos el precio del producto al momento exacto de crear el JOB. 

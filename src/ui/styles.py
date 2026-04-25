@@ -81,12 +81,20 @@ QLabel#Subtitle {
 /* Tablas */
 QTableWidget {
     background-color: white;
+    color: #2c3e50;
     alternate-background-color: #f9fbfb;
     selection-background-color: #3498db;
     selection-color: white;
     border: 1px solid #dcdde1;
     border-radius: 6px;
     gridline-color: #bdc3c7;
+}
+QTableWidget::item:hover {
+    background-color: #e8f4f8;
+}
+QTableWidget::item:selected {
+    background-color: #3498db;
+    color: white;
 }
 
 QListWidget {
@@ -135,14 +143,21 @@ QPushButton#DangerBtn {
 QPushButton#DangerBtn:hover { background-color: #c0392b; }
 
 /* Inpus */
-QLineEdit, QComboBox {
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {
     border: 1px solid #bdc3c7;
     border-radius: 4px;
     padding: 6px;
     background-color: white;
+    color: #2c3e50;
     font-size: 13px;
 }
-QLineEdit:focus, QComboBox:focus {
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: #2c3e50;
+    selection-background-color: #3498db;
+    selection-color: white;
+}
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus {
     border: 2px solid #2980b9;
 }
 

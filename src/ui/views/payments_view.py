@@ -66,11 +66,11 @@ class PaymentsView(QWidget):
         
         self.cb_invoices = QComboBox()
         self.inp_amount = QDoubleSpinBox()
-        self.inp_amount.setRange(0.01, 99999.99)
+        self.inp_amount.setRange(0.01, 99999999999.99)
         self.inp_amount.setPrefix("$ ")
         
         self.cb_method = QComboBox()
-        self.cb_method.addItems(["Cash", "Transferencia", "Cheque", "Zelle", "POS"])
+        self.cb_method.addItems(["EFECTIVO", "TRANSFERENCIA", "CHEQUE", "OTRO"])
         
         form_layout.addWidget(QLabel("Factura de Destino:"), 0, 0)
         form_layout.addWidget(self.cb_invoices, 0, 1)

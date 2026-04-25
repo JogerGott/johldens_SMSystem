@@ -1,7 +1,7 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFrame, QStackedWidget
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFrame, QStackedWidget, QMessageBox, QDialog
+from PyQt6.QtGui import QFont, QIcon, QColor, QPalette
+from PyQt6.QtCore import Qt, QTimer
 
 # Importar Componentes
 from src.ui.styles import GLOBAL_STYLESHEET
@@ -143,6 +143,86 @@ class MainWindow(QMainWindow):
             b.setChecked(i == index)
         self.stacked_widget.setCurrentIndex(index)
 
+class WelcomeDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
+        self.setFixedSize(550, 350)
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #1a252f;
+                border: 2px solid #3498db;
+                border-radius: 10px;
+            }
+            QLabel#Title {
+                color: #ecf0f1;
+                font-size: 28px;
+                font-weight: bold;
+                letter-spacing: 1px;
+            }
+            QLabel#Subtitle {
+                color: #bdc3c7;
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+            QLabel#Powered {
+                color: #3498db;
+                font-size: 13px;
+                font-weight: bold;
+                letter-spacing: 2px;
+            }
+            QPushButton#StartBtn {
+                background-color: #3498db;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 12px 30px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            QPushButton#StartBtn:hover {
+                background-color: #2980b9;
+            }
+        """)
+
+        layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setSpacing(15)
+
+        lbl_welcome = QLabel("WELCOME TO JOLDENS")
+        lbl_welcome.setObjectName("Title")
+        lbl_welcome.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        lbl_sub = QLabel("Advanced Dental Laboratory Management System")
+        lbl_sub.setObjectName("Subtitle")
+        lbl_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        # Spacer for centering
+        layout.addStretch()
+        layout.addWidget(lbl_welcome)
+        layout.addWidget(lbl_sub)
+        
+        # Button container to center it
+        btn_layout = QHBoxLayout()
+        self.btn_start = QPushButton("GET STARTED")
+        self.btn_start.setObjectName("StartBtn")
+        self.btn_start.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_start.clicked.connect(self.accept)
+        btn_layout.addStretch()
+        btn_layout.addWidget(self.btn_start)
+        btn_layout.addStretch()
+        
+        layout.addLayout(btn_layout)
+        layout.addStretch()
+
+        lbl_powered = QLabel("POWERED BY ASCENT")
+        lbl_powered.setObjectName("Powered")
+        lbl_powered.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(lbl_powered)
+        
+        layout.setContentsMargins(40, 40, 40, 20)
+        self.setLayout(layout)
+
 def start_app():
     app = QApplication(sys.argv)
     app.setStyleSheet(GLOBAL_STYLESHEET)
@@ -150,5 +230,10 @@ def start_app():
     app.setFont(font)
     
     window = MainWindow()
-    window.show()
+    window.showMaximized()
+    
+    # Mostrar el diálogo premium de bienvenida
+    welcome = WelcomeDialog(window)
+    welcome.exec()
+    
     sys.exit(app.exec())

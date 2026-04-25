@@ -9,8 +9,8 @@ class Patient(Base):
     name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=True)
 
-    id_doctor = Column(String(20), ForeignKey("doctors.id_doctor"), nullable=False)
-    id_clinic = Column(Integer, ForeignKey("clinics.id_clinic"), nullable=True)
+    id_doctor = Column(String(20), ForeignKey("doctors.id_doctor", ondelete="RESTRICT"), nullable=False)
+    id_clinic = Column(Integer, ForeignKey("clinics.id_clinic", ondelete="SET NULL"), nullable=True)
     
     doctor = relationship("Doctor", back_populates="patients")
     clinic = relationship("Clinic", back_populates="patients")

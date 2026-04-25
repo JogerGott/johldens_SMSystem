@@ -15,5 +15,19 @@ class ProductRepository:
     def check_product(self, id_product: int) -> Product:
         return self.session.query(Product).filter(Product.id_product == id_product).first()
 
+    def list_all_products(self):
+        return self.session.query(Product).all()
+
+    def update_product(self, id_product: int, name: str, price: float, days: int, status: bool) -> Product:
+        prod = self.check_product(id_product)
+        if prod:
+            prod.name = name
+            prod.price = price
+            prod.production_time = days
+            prod.status = status
+            self.session.commit()
+            self.session.refresh(prod)
+        return prod
+
     def list_active_products(self):
         return self.session.query(Product).filter(Product.status == True).all()

@@ -48,7 +48,7 @@ def run_integration_test():
         prod_resina = prod_repo.create_product("Resina Simple " + sfx, 100, 2)   # 2 días
 
         
-        box = box_repo.create_box("Azul", 1)
+        box = box_repo.create_box("AZUL", 1)
         
         print("-> Maestros creados con éxito.")
 
@@ -69,7 +69,7 @@ def run_integration_test():
         print(f"-> Trabajo #{job1.id_job} creado. Adjuntas 2 imágenes.")
         
         # JOB 2: SIN FOTOS
-        box2 = box_repo.create_box("Roja", 2)
+        box2 = box_repo.create_box("ROJA", 2)
         job2 = job_service.create_full_job(
             id_doctor=doctor.id_doctor, id_patient=patient.id_patient,
             product_items=product_items, id_box=box2.id_box, id_clinic=clinic.id_clinic,
@@ -78,7 +78,7 @@ def run_integration_test():
         print(f"-> Trabajo #{job2.id_job} creado. Adjuntas 0 imágenes.")
 
         # JOB 3: CON 1 FOTO
-        box3 = box_repo.create_box("Verde", 3)
+        box3 = box_repo.create_box("VERDE", 3)
         job3 = job_service.create_full_job(
             id_doctor=doctor.id_doctor, id_patient=patient.id_patient,
             product_items=product_items, id_box=box3.id_box, id_clinic=clinic.id_clinic,
@@ -123,7 +123,7 @@ def run_integration_test():
         print(f"-> Nuevo estado de la caja: {box.status.value}")
         assert box.status.value == "LIBRE", "Error: La caja no se liberó tras despachar."
 
-        print("\n[ÉXITO] 🎉 TODAS LAS PRUEBAS DE INTEGRACIÓN FUERON SUPERADAS. 🎉")
+        print("\n[ÉXITO] TODAS LAS PRUEBAS DE INTEGRACIÓN FUERON SUPERADAS.")
         print("La lógica del negocio opera a la perfección y tu Base de Datos MySQL está respondiendo increíblemente bien.")
 
     except AssertionError as ae:
@@ -131,7 +131,7 @@ def run_integration_test():
         session.rollback()
     except Exception as e:
         import traceback
-        with open("error_log.txt", "w") as f:
+        with open("error_log.txt", "w", encoding="utf-8") as f:
             f.write(traceback.format_exc())
         print(f"\n[ERROR CRÍTICO] Excepción capturada durante el test: {e}")
         session.rollback()

@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum as SqlaEnum, func, DECIMAL
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, Enum as SqlaEnum, func, DECIMAL
 import datetime
 from sqlalchemy.orm import relationship
 from src.models.base import Base
@@ -15,10 +15,9 @@ class Invoice(Base):
     id_invoice = Column(Integer, primary_key=True, index=True, autoincrement=True)
     
     # FK Hacia Job
-    id_job = Column(Integer, ForeignKey("jobs.id_job"), nullable=False, unique=True)
+    id_job = Column(Integer, ForeignKey("jobs.id_job", ondelete="RESTRICT"), nullable=False, unique=True)
     
-    invoice_date = Column(Date, nullable=False, default=datetime.date.today)
-    detail = Column(String(300), nullable=True)
+    invoice_date = Column(Date, nullable=True)
     
     amount = Column(DECIMAL(10, 2), nullable=False) 
     lending_balance = Column(DECIMAL(10, 2), nullable=False) 

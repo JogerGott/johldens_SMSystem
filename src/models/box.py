@@ -9,12 +9,12 @@ class BoxStatus(enum.Enum):
     INACTIVA = "INACTIVA"
 
 class BoxStateColor(enum.Enum):
-    NEGRA = "negra"
-    AZUL = "azul"
-    ROJA = "roja"
-    VERDE = "verde"
-    AMARILLA = "amarilla"
-    GRIS = "gris"
+    NEGRA = "NEGRA"
+    AZUL = "AZUL"
+    ROJA = "ROJA"
+    VERDE = "VERDE"
+    AMARILLA = "AMARILLA"
+    GRIS = "GRIS"
 
 class Box(Base):
     __tablename__ = "boxes"

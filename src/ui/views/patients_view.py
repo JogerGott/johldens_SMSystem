@@ -44,25 +44,15 @@ class PatientsView(QWidget):
         # Controles Top (Filtros en el futuro, por ahora listado general del mes actual)
         top_controls = QHBoxLayout()
         
-        self.cb_month = QComboBox()
-        self.cb_month.addItems(["Todos los meses", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"])
-        current_month = datetime.date.today().month
-        self.cb_month.setCurrentIndex(current_month) # Selecciona mes actual
+        self.inp_search = QLineEdit()
+        self.inp_search.setPlaceholderText("Buscar por Nombre o Cédula...")
         
-        self.cb_year = QComboBox()
-        current_year = datetime.date.today().year
-        self.cb_year.addItems([str(current_year - 1), str(current_year), str(current_year + 1)])
-        self.cb_year.setCurrentText(str(current_year))
-        
-        btn_filter = QPushButton("Filtrar")
+        btn_filter = QPushButton("Buscar")
         btn_filter.setObjectName("ActionBtn")
         btn_filter.clicked.connect(self.load_data)
         
-        top_controls.addWidget(QLabel("Mes:"))
-        top_controls.addWidget(self.cb_month)
-        top_controls.addWidget(QLabel("Año:"))
-        top_controls.addWidget(self.cb_year)
-        top_controls.addStretch()
+        top_controls.addWidget(QLabel("Buscador:"))
+        top_controls.addWidget(self.inp_search)
         top_controls.addWidget(btn_filter)
         
         layout.addLayout(top_controls)
@@ -127,19 +117,13 @@ class PatientsView(QWidget):
     def load_data(self):
         session = SessionLocal()
         pat_repo = PatientRepository(session)
-        doc_repo = DoctorRepository(session)
-        clinic_repo = ClinicRepository(session)
         
-        # Logica de Filtro
-        month_idx = self.cb_month.currentIndex()
-        year = int(self.cb_year.currentText())
+        search_text = self.inp_search.text().lower()
+        patients = pat_repo.list_all_patients()
         
-        if month_idx == 0:
-            # En vida real tendriamos un pat_repo.list_all_patients()
-            # Por ahora simulamos si es 0 (Todos) trae los de enero temporal o requerimos el repo para eso
-            patients = pat_repo.list_patients_by_month(datetime.date.today().month, year) # Temporal
-        else:
-            patients = pat_repo.list_patients_by_month(month_idx, year)
+        if search_text:
+            patients = [p for p in patients if search_text in p.name.lower() or search_text in (p.last_name or "").lower() or search_text in str(p.id_patient).lower()]
+            
             
         self.table.setRowCount(0)
         for row, patient in enumerate(patients):

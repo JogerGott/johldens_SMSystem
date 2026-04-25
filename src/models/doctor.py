@@ -13,7 +13,7 @@ class Doctor(Base):
     address = Column(String(255), nullable=True)
     status = Column(Boolean, nullable=False, default=True)
     
-    id_clinic = Column(Integer, ForeignKey("clinics.id_clinic"), nullable=True)
+    id_clinic = Column(Integer, ForeignKey("clinics.id_clinic", ondelete="SET NULL"), nullable=True)
     
     clinic = relationship("Clinic", back_populates="doctors")
     patients = relationship("Patient", back_populates="doctor")

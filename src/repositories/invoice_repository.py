@@ -37,16 +37,19 @@ class InvoiceRepository:
         pstate = PayState(paystate.upper())
         return self.session.query(Invoice).filter(Invoice.pay_state == pstate).all()
 
-    def add_pay_invoice(self, id_invoice: int, amount: int):
+    def add_pay_invoice(self, id_invoice: int, amount: float):
         """
         Reduce el saldo deudor lending_balance basándose puramente en un monto.
         Se llama despues de verificar un Payment existente o al crear uno.
         """
+        import decimal
         inv = self.check_invoice(id_invoice)
         if inv:
-            inv.lending_balance -= amount
+            # Convertimos a string primero para evitar problemas de coma flotante y luego a Decimal
+            dec_amount = decimal.Decimal(str(amount))
+            inv.lending_balance -= dec_amount
             if inv.lending_balance < 0:
-                inv.lending_balance = 0
+                inv.lending_balance = decimal.Decimal('0.00')
             self.session.commit()
             self.update_paystate(id_invoice)
 

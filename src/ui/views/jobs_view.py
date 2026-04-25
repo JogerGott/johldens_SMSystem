@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, 
                              QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox,
                              QTabWidget, QComboBox, QGridLayout, QListWidget, QSpinBox,
-                             QFileDialog)
+                             QFileDialog, QLineEdit)
 from PyQt6.QtCore import Qt
 import datetime
 
@@ -11,6 +11,7 @@ from src.repositories.patient_repository import PatientRepository
 from src.repositories.product_repository import ProductRepository
 from src.repositories.box_repository import BoxRepository
 from src.services.job_service import JobService
+from src.models import Job
 
 class JobsView(QWidget):
     def __init__(self):
@@ -31,6 +32,10 @@ class JobsView(QWidget):
         self.tab_create = QWidget()
         self.setup_create_tab()
         self.tabs.addTab(self.tab_create, "➕ Ingresar Trabajo")
+        
+        self.tab_search = QWidget()
+        self.setup_search_tab()
+        self.tabs.addTab(self.tab_search, "🔍 Búsqueda Específica")
         
         layout.addWidget(self.tabs)
         self.setLayout(layout)
@@ -60,6 +65,7 @@ class JobsView(QWidget):
         self.table.setHorizontalHeaderLabels(["No. Orden", "Ingreso", "Vencimiento", "Doctor", "Paciente", "Caja", "Estado"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         
         layout.addWidget(self.table)
         
@@ -146,6 +152,68 @@ class JobsView(QWidget):
         
         self.tab_create.setLayout(layout)
 
+    def setup_search_tab(self):
+        layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        search_layout = QHBoxLayout()
+        self.inp_job_search = QLineEdit()
+        self.inp_job_search.setPlaceholderText("Buscar por # Orden, Doctor o Paciente...")
+        btn_search = QPushButton("Buscar")
+        btn_search.setObjectName("ActionBtn")
+        btn_search.clicked.connect(self.perform_job_search)
+        
+        search_layout.addWidget(self.inp_job_search)
+        search_layout.addWidget(btn_search)
+        
+        layout.addLayout(search_layout)
+        
+        self.cb_search_results = QComboBox()
+        self.cb_search_results.currentIndexChanged.connect(self.display_searched_job)
+        layout.addWidget(QLabel("Resultados de Búsqueda:"))
+        layout.addWidget(self.cb_search_results)
+        
+        self.job_detail_widget = QWidget()
+        detail_layout = QGridLayout()
+        
+        self.lbl_det_orden = QLabel("-")
+        self.lbl_det_dates = QLabel("-")
+        self.lbl_det_clinic = QLabel("-")
+        self.lbl_det_cart = QListWidget()
+        
+        self.cb_det_status = QComboBox()
+        self.cb_det_status.addItems(["REGISTRADO", "EN_PROCESO", "EN_REVISION", "APROBADO", "TERMINADO", "FACTURADO", "DESPACHADO"])
+        
+        btn_open_pics = QPushButton("Ver Fotos (Explorador)")
+        btn_open_pics.clicked.connect(self.open_job_pictures)
+        
+        btn_save_status = QPushButton("Actualizar Estado")
+        btn_save_status.setObjectName("ActionBtn")
+        btn_save_status.clicked.connect(self.save_job_status)
+        
+        detail_layout.addWidget(QLabel("<b>No. Orden:</b>"), 0, 0)
+        detail_layout.addWidget(self.lbl_det_orden, 0, 1)
+        detail_layout.addWidget(QLabel("<b>Fechas (Ing/Sal):</b>"), 1, 0)
+        detail_layout.addWidget(self.lbl_det_dates, 1, 1)
+        detail_layout.addWidget(QLabel("<b>Clínica/Doct/Pac:</b>"), 2, 0)
+        detail_layout.addWidget(self.lbl_det_clinic, 2, 1)
+        detail_layout.addWidget(QLabel("<b>Tratamientos:</b>"), 3, 0)
+        detail_layout.addWidget(self.lbl_det_cart, 3, 1)
+        
+        ctrl_layout = QHBoxLayout()
+        ctrl_layout.addWidget(QLabel("Cambiar Estado:"))
+        ctrl_layout.addWidget(self.cb_det_status)
+        ctrl_layout.addWidget(btn_save_status)
+        ctrl_layout.addWidget(btn_open_pics)
+        
+        detail_layout.addLayout(ctrl_layout, 4, 0, 1, 2)
+        
+        self.job_detail_widget.setLayout(detail_layout)
+        self.job_detail_widget.setVisible(False)
+        
+        layout.addWidget(self.job_detail_widget)
+        self.tab_search.setLayout(layout)
+
     def load_data(self):
         session = SessionLocal()
         job_repo = JobRepository(session)
@@ -213,6 +281,15 @@ class JobsView(QWidget):
         if not prod_data: return
         qty = self.inp_qty.value()
         
+        for item in self.cart_items:
+            if item['id_product'] == prod_data['id_product']:
+                item['quantity'] += qty
+                self.list_cart.clear()
+                for c in self.cart_items:
+                    self.list_cart.addItem(f"{c['quantity']}x {c['name']}")
+                self.inp_qty.setValue(1)
+                return
+        
         self.cart_items.append({'id_product': prod_data["id_product"], 'name': prod_data["name"], 'quantity': qty})
         self.list_cart.addItem(f"{qty}x {prod_data['name']}")
         self.inp_qty.setValue(1)
@@ -277,3 +354,91 @@ class JobsView(QWidget):
             job_serv.dispatch_job(id_job)
             QMessageBox.information(self, "Éxito", f"Orden {order_str} despachada con éxito.")
             self.load_data()
+
+    def perform_job_search(self):
+        query = self.inp_job_search.text().lower()
+        if not query: return
+        
+        session = SessionLocal()
+        job_repo = JobRepository(session)
+        # En vida real el backend haría las query con ILIKE, aquí filtramos sobre los pendientes y completados temporalmente
+        all_jobs = job_repo.session.query(Job).all()
+        
+        self.cb_search_results.blockSignals(True)
+        self.cb_search_results.clear()
+        self.cb_search_results.addItem("Seleccione un resultado...", None)
+        
+        for j in all_jobs:
+            doc_name = (j.doctor.name + " " + j.doctor.last_name).lower() if j.doctor else ""
+            pat_name = (j.patient.name + " " + j.patient.last_name).lower() if j.patient else ""
+            
+            if query in str(j.id_job) or query in doc_name or query in pat_name:
+                doc_display = j.doctor.name if j.doctor else "N/A"
+                pat_display = j.patient.name if j.patient else "N/A"
+                self.cb_search_results.addItem(f"ORD-{j.id_job} | Dr. {doc_display} | Pac: {pat_display} | {j.status.value}", j.id_job)
+                
+        self.cb_search_results.blockSignals(False)
+        self.job_detail_widget.setVisible(False)
+        session.close()
+
+    def display_searched_job(self):
+        id_job = self.cb_search_results.currentData()
+        if not id_job:
+            self.job_detail_widget.setVisible(False)
+            return
+            
+        session = SessionLocal()
+        job = JobRepository(session).check_job(id_job)
+        if job:
+            self.lbl_det_orden.setText(f"ORD-{job.id_job} (Caja {job.id_box if job.id_box else 'N/A'})")
+            self.lbl_det_dates.setText(f"{job.entry_date} -> {job.expected_exit_date}")
+            
+            doc_name = f"{job.doctor.name} {job.doctor.last_name}" if job.doctor else "N/A"
+            pat_name = f"{job.patient.name} {job.patient.last_name}" if job.patient else "N/A"
+            clin_name = job.clinic.name if job.clinic else "N/A"
+            self.lbl_det_clinic.setText(f"Cli: {clin_name} / Dr: {doc_name} / P: {pat_name}")
+            
+            self.lbl_det_cart.clear()
+            for prod in job.products:
+                self.lbl_det_cart.addItem(f"{prod.quantity}x Prod_ID:{prod.id_product} ($ {prod.historic_price})")
+                
+            self.cb_det_status.setCurrentText(job.status.value)
+            self.job_detail_widget.setVisible(True)
+            
+        session.close()
+
+    def open_job_pictures(self):
+        id_job = self.cb_search_results.currentData()
+        if not id_job: return
+        import os
+        import subprocess
+        import sys
+        
+        folder = os.path.abspath(os.path.join("assets", "job_pictures", str(id_job)))
+        if not os.path.exists(folder):
+            QMessageBox.information(self, "Sin Fotos", "Esta orden no tiene fotos adjuntas.")
+            return
+            
+        if sys.platform == 'win32':
+            os.startfile(folder)
+        elif sys.platform == 'darwin':
+            subprocess.Popen(['open', folder])
+        else:
+            subprocess.Popen(['xdg-open', folder])
+
+    def save_job_status(self):
+        id_job = self.cb_search_results.currentData()
+        if not id_job: return
+        
+        status = self.cb_det_status.currentText()
+        session = SessionLocal()
+        try:
+            JobRepository(session).change_job_status(id_job, status)
+            QMessageBox.information(self, "Éxito", f"Estado de ORD-{id_job} actualizado a {status}")
+            self.perform_job_search()
+            self.display_searched_job()
+        except Exception as e:
+            session.rollback()
+            QMessageBox.critical(self, "Error", str(e))
+        finally:
+            session.close()

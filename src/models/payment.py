@@ -13,10 +13,10 @@ class PaymentType(enum.Enum):
 class Payment(Base):
     __tablename__ = "payments"
 
-    id_payment = Column(Integer, primary_key=True, index=True)
-    id_invoice = Column(Integer, ForeignKey("invoices.id_invoice"), nullable=False)
+    id_payment = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id_invoice = Column(Integer, ForeignKey("invoices.id_invoice", ondelete="RESTRICT"), nullable=False)
     
-    pay_date = Column(DateTime, nullable=False, default=datetime.datetime.now) # Actualizado de Date a DateTime
+    pay_date = Column(DateTime, nullable=False, server_default=func.now())
     payment_amount = Column(DECIMAL(10, 2), nullable=False)
     payment_type = Column(SqlaEnum(PaymentType), nullable=False, default=PaymentType.EFECTIVO)
     status = Column(Boolean, nullable=False, default=True)

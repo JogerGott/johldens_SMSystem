@@ -1,5 +1,6 @@
 import enum
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum as SqlaEnum, Text
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, Enum as SqlaEnum, Text
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from src.models.base import Base
 
@@ -24,15 +25,15 @@ class Job(Base):
     job_type = Column(SqlaEnum(JobType), nullable=False, default=JobType.NUEVO)
     description = Column(Text, nullable=True)
     
-    entry_date = Column(Date, nullable=False)
+    entry_date = Column(Date, nullable=True)
     expected_exit_date = Column(Date, nullable=False)
     exit_date = Column(Date, nullable=True)
     status = Column(SqlaEnum(JobStatus), nullable=False, default=JobStatus.REGISTRADO)
 
-    id_doctor = Column(String(20), ForeignKey("doctors.id_doctor"), nullable=False) # Actualizado
-    id_patient = Column(String(20), ForeignKey("patients.id_patient"), nullable=False) # Actualizado
-    id_box = Column(Integer, ForeignKey("boxes.id_box"), nullable=True)
-    id_clinic = Column(Integer, ForeignKey("clinics.id_clinic"), nullable=True)
+    id_doctor = Column(String(20), ForeignKey("doctors.id_doctor", ondelete="RESTRICT"), nullable=False) 
+    id_patient = Column(String(20), ForeignKey("patients.id_patient", ondelete="RESTRICT"), nullable=False) 
+    id_box = Column(Integer, ForeignKey("boxes.id_box", ondelete="RESTRICT"), nullable=True)
+    id_clinic = Column(Integer, ForeignKey("clinics.id_clinic", ondelete="RESTRICT"), nullable=True)
 
     doctor = relationship("Doctor")
     patient = relationship("Patient")
